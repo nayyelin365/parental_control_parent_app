@@ -17,7 +17,7 @@ class _SplashPageState extends State<SplashPage> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 3), () {
       if (StorageUtils.getString(Constants.childId) != "") {
         Navigator.pushReplacement(
           context,
@@ -47,19 +47,19 @@ class _SplashPageState extends State<SplashPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Image.asset(
-              "assets/images/appLogo.png",
+              "assets/images/login.png",
               height: 150,
               width: 150,
             ),
             const SizedBox(
-              height: 150,
+              height: 50,
             ),
             Text(
-              "AppLock".toUpperCase(),
+              "Parental Control App".toUpperCase(),
               style: GoogleFonts.ubuntu(
                 textStyle: const TextStyle(
-                  color: Colors.white,
-                  fontSize: 12,
+                  color: Colors.black,
+                  fontSize: 14,
                   letterSpacing: 5,
                   fontWeight: FontWeight.w300,
                 ),

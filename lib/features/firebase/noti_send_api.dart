@@ -1,14 +1,15 @@
 import 'dart:convert';
 
+import 'package:flutter/cupertino.dart';
 import 'package:http/http.dart' as http;
+import 'package:parent_app/utils/share_prefs_utils.dart';
 
 import '../../constants.dart';
 
 Future<String> postNotification(
     String title, String body, String packageName) async {
   Map data = {
-    "to":
-        "d-8YtQUkRa-LgFvNhdTvpT:APA91bG6c7DxHXbdE_d6r88i8BK1T3meNYKfNkh6elHncbfmXuN9ik2hP42GBxolIqVD4t8utrvhrHFmk-cOD1uTtd7CrPk-404WSexSm9JKdX-Af_a3_nQ6Cq_fhcI8E2xzmGpmK6WF",
+    "to": StorageUtils.getString(Constants.firebaseToken),
     "data": {"title": title, "body": body, "packageName": packageName},
     "notification": {"title": title, "body": body, "packageName": packageName},
     "priority": "high"
@@ -24,13 +25,10 @@ Future<String> postNotification(
     body: jsonBody,
   );
   if (response.statusCode == 200) {
-    print("@@@NotiSend");
+    debugPrint("@@@NotiSend");
     return "Already send";
   } else {
-    // If the server did not return a 201 CREATED response,
-    // then throw an exception.
-    //throw Exception('Failed to create album.');
-    print("@@@NotiSendError");
+    debugPrint("@@@NotiSendError");
     return "Error Occur";
   }
 }

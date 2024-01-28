@@ -113,18 +113,19 @@ class _LoginScreenState extends State<LoginScreen> {
                           query.docs.forEach((f) {
                             var childId = f['child_id'];
                             var firebaseToken = f['firebase_token'];
-                            Fluttertoast.showToast(msg: childId.toString());
+                            //save data
                             StorageUtils.putString(
                                 Constants.firebaseToken, firebaseToken);
                             StorageUtils.putString(Constants.childId, childId);
+
+                            Fluttertoast.showToast(msg: "success");
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const HomePage(),
+                              ),
+                            );
                           });
-                          Fluttertoast.showToast(msg: "success");
-                          Navigator.pushReplacement(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const HomePage(),
-                            ),
-                          );
                         }
                       });
                     },

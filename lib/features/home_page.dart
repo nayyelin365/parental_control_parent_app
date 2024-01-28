@@ -4,8 +4,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_switch/flutter_switch.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:parent_app/constants.dart';
 import 'package:parent_app/data/child_app_model.dart';
 import 'package:parent_app/features/firebase/noti_send_api.dart';
+import 'package:parent_app/features/splash/splash.dart';
+import 'package:parent_app/utils/share_prefs_utils.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -23,6 +26,22 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Parent App"),
+        actions: [
+          InkWell(
+              onTap: () {
+                StorageUtils.clrString();
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SplashPage(),
+                  ),
+                );
+              },
+              child: const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Icon(Icons.logout),
+              ))
+        ],
       ),
       body: StreamBuilder(
         stream: _getStream(),
@@ -44,7 +63,7 @@ class _HomePageState extends State<HomePage> {
           }
           if (snapshot.hasData) {
             return Container(
-              child: generalKnowledgeWidget(snapshot),
+              child: appListWidget(snapshot),
             );
           }
           return const Center(child: CircularProgressIndicator());
@@ -53,7 +72,7 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget generalKnowledgeWidget(AsyncSnapshot<QuerySnapshot> snapshot) {
+  Widget appListWidget(AsyncSnapshot<QuerySnapshot> snapshot) {
     childAppList.clear();
     snapshot.data!.docs.forEach((f) {
       //print(f["appName"]);
@@ -150,7 +169,7 @@ class _HomePageState extends State<HomePage> {
                     onToggle: (val) {
                       if (childAppList[index].enable == "1") {
                         collection
-                            .doc("5EyYPL3K6DC5jBfrwRgO")
+                            .doc(StorageUtils.getString(Constants.childId))
                             .collection('applist')
                             .where('appName',
                                 isEqualTo: childAppList[index].appName)
@@ -162,26 +181,26 @@ class _HomePageState extends State<HomePage> {
                           });
                         }).catchError((error) => print('onError:$error'));
                         postNotification(
-                            "${childAppList[index].appName} is allowed.",
                             "${childAppList[index].appName} is allowed by your parents.",
+                            "Enable",
                             childAppList[index].packageName.toString());
                         Fluttertoast.showToast(msg: "In Active");
                       } else {
                         collection
-                            .doc("5EyYPL3K6DC5jBfrwRgO")
+                            .doc(StorageUtils.getString(Constants.childId))
                             .collection('applist')
                             .where('appName',
                                 isEqualTo: childAppList[index].appName)
                             .get()
                             .then((querySnapshot) {
-                          print('answer: success');
+                          //print('answer: success');
                           querySnapshot.docs.forEach((doc) {
                             doc.reference.update({'enable': '1'});
                           });
                         }).catchError((error) => print('onError: $error'));
                         postNotification(
-                            "${childAppList[index].appName} is not allowed.",
                             "${childAppList[index].appName} is not allowed by your parents.",
+                            "Disable",
                             childAppList[index].packageName.toString());
                         Fluttertoast.showToast(msg: "Active");
                       }
@@ -209,7 +228,7 @@ class _HomePageState extends State<HomePage> {
   Stream<QuerySnapshot> _getStream() {
     return FirebaseFirestore.instance
         .collection("child_table")
-        .doc("5EyYPL3K6DC5jBfrwRgO")
+        .doc(StorageUtils.getString(Constants.childId))
         .collection('applist')
         .snapshots();
   }
